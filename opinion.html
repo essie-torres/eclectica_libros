@@ -1,0 +1,145 @@
+<section class="opiniones-clientes" aria-label="Opiniones de clientes">
+  <div class="container-opiniones">
+    <h2>Lo que dicen nuestros lectores</h2>
+    <div class="opiniones-lista">
+      
+      <article class="opinion-card" role="article" aria-labelledby="opinion1-nombre">
+        <header class="opinion-header">
+          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Foto de Ana Pérez" class="avatar" />
+          <div>
+            <h3 id="opinion1-nombre">Ana Pérez</h3>
+            <time datetime="2025-05-20" class="fecha-opinion">20 mayo, 2025</time>
+            <div class="estrellas" aria-label="Valoración: 5 de 5 estrellas" role="img">
+              ★★★★★
+            </div>
+          </div>
+        </header>
+        <p class="comentario">
+          "Excelente servicio y una selección de libros maravillosa. Llegaron rápido y en perfectas condiciones."
+        </p>
+      </article>
+
+      <article class="opinion-card" role="article" aria-labelledby="opinion2-nombre">
+        <header class="opinion-header">
+          <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Foto de Carlos Gómez" class="avatar" />
+          <div>
+            <h3 id="opinion2-nombre">Carlos Gómez</h3>
+            <time datetime="2025-04-15" class="fecha-opinion">15 abril, 2025</time>
+            <div class="estrellas" aria-label="Valoración: 4 de 5 estrellas" role="img">
+              ★★★★☆
+            </div>
+          </div>
+        </header>
+        <p class="comentario">
+          "Muy buena atención al cliente y precios competitivos. Volveré a comprar seguro."
+        </p>
+      </article>
+
+      <article class="opinion-card" role="article" aria-labelledby="opinion3-nombre">
+        <header class="opinion-header">
+          <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="Foto de Laura Fernández" class="avatar" />
+          <div>
+            <h3 id="opinion3-nombre">Laura Fernández</h3>
+            <time datetime="2025-03-08" class="fecha-opinion">8 marzo, 2025</time>
+            <div class="estrellas" aria-label="Valoración: 5 de 5 estrellas" role="img">
+              ★★★★★
+            </div>
+          </div>
+        </header>
+        <p class="comentario">
+          "Una experiencia muy agradable, con envíos rápidos y libros en excelente estado. ¡Muy recomendable!"
+        </p>
+      </article>
+
+    </div>
+  </div>
+
+  <style>
+    .opiniones-clientes {
+      background: #fff;
+      padding: 60px 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    .container-opiniones {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .opiniones-clientes h2 {
+      text-align: center;
+      font-size: 2.6rem;
+      color: #b36a70;
+      margin-bottom: 40px;
+      font-weight: 700;
+    }
+    .opiniones-lista {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .opinion-card {
+      background: #fafafa;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: box-shadow 0.3s ease;
+    }
+    .opinion-card:hover {
+      box-shadow: 0 8px 25px rgba(179, 106, 112, 0.3);
+    }
+    .opinion-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 16px;
+    }
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #b36a70;
+      flex-shrink: 0;
+    }
+    .opinion-header h3 {
+      margin: 0 0 6px 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #2c2c2c;
+    }
+    .fecha-opinion {
+      font-size: 0.85rem;
+      color: #999;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .estrellas {
+      font-size: 1.2rem;
+      color: #b36a70;
+      letter-spacing: 2px;
+      user-select: none;
+    }
+    .comentario {
+      font-style: italic;
+      font-size: 1rem;
+      color: #444;
+      line-height: 1.5;
+      margin-top: auto;
+    }
+
+    @media (max-width: 480px) {
+      .opiniones-lista {
+        grid-template-columns: 1fr;
+      }
+      .opinion-card {
+        padding: 20px;
+      }
+      .opinion-header {
+        gap: 12px;
+      }
+    }
+  </style>
+</section>

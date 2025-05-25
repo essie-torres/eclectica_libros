@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ecléctica Libros</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Estilos básicos para carrito y cantidad */
+    #cart {
+      position: fixed;
+      top: 50px;
+      right: 20px;
+      width: 320px;
+      max-height: 400px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+    }
+    #cart ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 10px 0;
+    }
+    #cart li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+    #cart-toggle {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      background: #b36a70;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      z-index: 1001;
+    }
+    .cantidad-input {
+      width: 50px;
+      padding: 3px;
+      margin-left: 8px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      vertical-align: middle;
+    }
+    .libro label {
+      font-weight: 600;
+    }
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 4px;
+      padding: 10px;
+      position: fixed;
+      z-index: 2000;
+      left: 50%;
+      bottom: 30px;
+      font-size: 17px;
+    }
+    #toast.show {
+      visibility: visible;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+    @keyframes fadein {
+      from {bottom: 0; opacity: 0;}
+      to {bottom: 30px; opacity: 1;}
+    }
+    @keyframes fadeout {
+      from {bottom: 30px; opacity: 1;}
+      to {bottom: 0; opacity: 0;}
+    }
+
+    /* --- Estilos para paneles laterales (menú y categorías) --- */
+    .menu-btn {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      background: #b36a70;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      z-index: 1100;
+      margin-right: 5px;
+    }
+
+    #btn-categorias {
+      left: 140px;
+    }
+
+    .side-panel {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 280px;
+      background: #fff;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+      padding: 20px;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1200;
+    }
+
+    /* Cuando el panel está abierto */
+    .side-panel.open {
+      transform: translateX(0);
+    }
+
+    /* Para el panel de categorías lo haremos a la derecha */
+    #categorias-panel {
+      right: 0;
+      left: auto;
+      transform: translateX(100%);
+    }
+    #categorias-panel.open {
+      transform: translateX(0);
+    }
+
+    .side-panel h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+      color: #b36a70;
+    }
+
+    .side-panel ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .side-panel li {
+      margin-bottom: 12px;
+    }
+
+    .side-panel a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .side-panel a:hover {
+      color: #b36a70;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #b36a70;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1150;
+    }
+
+    #overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ecléctica Libros</h1>
+    <nav>
+      <ul>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#">Libros mas vendidos</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+        <li><a href="opinion.html">Opinión del cliente</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Botones para abrir paneles -->
+  <button id="btn-menu" class="menu-btn">☰ Menú</button>
+  <button id="btn-categorias" class="menu-btn">📚 Categorías</button>
+
+  <!-- Panel menú -->
+  <div id="menu-panel" class="side-panel">
+    <button class="close-btn" id="close-menu">&times;</button>
+    <h2>Menú</h2>
+    <ul>
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="catalogo.html">Catálogo</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+
+      <li><a href="club.html">Club Ecléctica</a></li>
+    </ul>
+  </div>
+
+  <!-- Panel categorías -->
+  <div id="categorias-panel" class="side-panel">
+    <button class="close-btn" id="close-categorias">&times;</button>
+    <h2>Categorías</h2>
+    <ul>
+      <li><a href="#">Ficción</a></li>
+      <li><a href="#">No Ficción</a></li>
+      <li><a href="#">Infantil</a></li>
+      <li><a href="#">Autoayuda</a></li>
+      <li><a href="#">Tecnología</a></li>
+      <!-- Más categorías -->
+    </ul>
+  </div>
+
+  <!-- Fondo oscuro cuando el panel está abierto -->
+  <div id="overlay"></div>
+
+  <!-- Botón flotante del carrito -->
+  <button id="cart-toggle" onclick="toggleCart()">
+    🛒 Carrito (<span id="cart-count">0</span>)
+  </button>
+
+  <!-- Ventana flotante del carrito -->
+  <div id="cart">
+    <h2>Carrito de compras</h2>
+    <ul id="cart-items"></ul>
+    <p>Total: S/ <span id="cart-total">0.00</span></p>
+    <button onclick="emptyCart()">Vaciar carrito</button>
+    <button onclick="goToCheckout()">Pagar</button>
+  </div>
+
+  <main>
+    <section class="productos">
+      <article class="libro">
+        <img src="img/mi-vecino-es-stripper.jpg" alt="¡Mi vecino es stripper!" />
+        <h2>¡Mi vecino es stripper!</h2>
+        <p>Autor: Melissa Hall</p>
+        <p>Precio: S/ 35.00</p>
+        <label>
+          Cantidad: <input type="number" min="1" value="1" class="cantidad-input" />
+        </label>
+        <button onclick="addToCart('¡Mi vecino es stripper!', 35.00, this)">Agregar al carrito</button>
+      </article>
+
+      <article class="libro">
+        <img src="img/La casa de la noche marcada.png" alt="La casa de la noche marcada" />
+        <h2>La casa de la noche marcada</h2>
+        <p>Autor: P.C. Cast y Kristin Cast</p>
+        <p>Precio: S/ 35.00</p>
+        <label>
+          Cantidad: <input type="number" min="1" value="1" class="cantidad-input" />
+        </label>
+        <button onclick="addToCart('La casa de la noche marcada', 35.00, this)">Agregar al carrito</button>
+      </article>
+      <!-- Más libros aquí -->
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Ecléctica Libros. Todos los derechos reservados.</p>
+  </footer>
+
+  <div id="toast"></div>
+
+  <script>
+    // Mostrar toast
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.className = "show";
+      setTimeout(() => {
+        toast.className = toast.className.replace("show", "");
+      }, 3000);
+    }
+
+    // Agregar producto al carrito en localStorage
+    function addToCart(title, price, buttonElement) {
+      // Obtener cantidad del input junto al botón
+      const cantidadInput = buttonElement.previousElementSibling.querySelector('.cantidad-input');
+      let cantidad = 1;
+      if (cantidadInput) {
+        cantidad = parseInt(cantidadInput.value);
+        if (isNaN(cantidad) || cantidad < 1) cantidad = 1;
+      }
+
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+      // Buscar si ya existe el producto para sumar cantidades
+      const existingIndex = cart.findIndex(item => item.title === title);
+      if (existingIndex >= 0) {
+        cart[existingIndex].cantidad += cantidad;
+      } else {
+        cart.push({ title, price, cantidad });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartUI();
+      showToast("Libro agregado al carrito");
+    }
+
+    // Actualizar interfaz carrito desde localStorage
+    function updateCartUI() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const cartItems = document.getElementById("cart-items");
+      const cartTotal = document.getElementById("cart-total");
+      const cartCount = document.getElementById("cart-count");
+      const cartDiv = document.getElementById("cart");
+
+      cartItems.innerHTML = '';
+      let total = 0;
+      let totalItems = 0;
+
+      cart.forEach(item => {
+        const li = document.createElement("li");
+
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = `${item.title} x${item.cantidad}`;
+
+        const priceSpan = document.createElement("span");
+        const subtotal = item.price * item.cantidad;
+        priceSpan.textContent = `S/ ${subtotal.toFixed(2)}`;
+        priceSpan.style.fontWeight = "600";
+        priceSpan.style.color = "#b36a70";
+
+        li.style.display = "flex";
+        li.style.justifyContent = "space-between";
+
+        li.appendChild(titleSpan);
+        li.appendChild(priceSpan);
+        cartItems.appendChild(li);
+
+        total += subtotal;
+        totalItems += item.cantidad;
+      });
+
+      cartCount.textContent = totalItems;
+      cartTotal.textContent = total.toFixed(2);
+
+      cartDiv.style.display = cart.length > 0 ? "block" : "none";
+    }
+
+    // Mostrar u ocultar carrito flotante
+    function toggleCart() {
+      const cartDiv = document.getElementById("cart");
+      cartDiv.style.display = cartDiv.style.display === "block" ? "none" : "block";
+    }
+
+    // Vaciar carrito
+    function emptyCart() {
+      localStorage.removeItem("cart");
+      updateCartUI();
+    }
+
+    // Ir a checkout solo si hay productos
+    function goToCheckout() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      if (cart.length === 0) {
+        alert("Tu carrito está vacío");
+        return;
+      }
+      window.location.href = "checkout.html";
+    }
+
+    // Abrir y cerrar paneles laterales y overlay
+    const btnMenu = document.getElementById("btn-menu");
+    const btnCategorias = document.getElementById("btn-categorias");
+    const menuPanel = document.getElementById("menu-panel");
+    const categoriasPanel = document.getElementById("categorias-panel");
+    const closeMenu = document.getElementById("close-menu");
+    const closeCategorias = document.getElementById("close-categorias");
+    const overlay = document.getElementById("overlay");
+
+    function openPanel(panel) {
+      panel.classList.add("open");
+      overlay.classList.add("active");
+    }
+
+    function closePanel(panel) {
+     panel.classList.remove("open");
+      overlay.classList.remove("active");
+    }
+
+    btnMenu.addEventListener("click", () => {
+      openPanel(menuPanel);
+    });
+    btnCategorias.addEventListener("click", () => {
+      openPanel(categoriasPanel);
+    });
+
+    closeMenu.addEventListener("click", () => {
+      closePanel(menuPanel);
+    });
+    closeCategorias.addEventListener("click", () => {
+      closePanel(categoriasPanel);
+    });
+
+    overlay.addEventListener("click", () => {
+      // Cierra ambos paneles y el overlay
+      closePanel(menuPanel);
+      closePanel(categoriasPanel);
+    });
+
+    // Inicializar carrito al cargar página
+    document.addEventListener("DOMContentLoaded", updateCartUI);
+  </script>
+</body>
+</html>
